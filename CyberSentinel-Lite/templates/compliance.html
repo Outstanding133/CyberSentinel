@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Compliance - CyberSentinel Lite{% endblock %}
+{% block content %}
+<h1 class="mb-3">Compliance: ISO/IEC 27001:2022 Sample Controls</h1>
+
+<div class="alert alert-warning">
+  Sample controls inspired by ISO/IEC 27001:2022. This app does not certify
+  ISO 27001 compliance.
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card stat-card shadow-sm"><div class="card-body">
+      <h6 class="text-muted">Controls Assessed</h6>
+      <p class="display-6 mb-0">{{ assessed }} / {{ total }}</p>
+      <small class="text-muted">{{ pct }}% complete</small>
+    </div></div>
+  </div>
+  <div class="col-md-8">
+    <div class="card shadow-sm"><div class="card-body">
+      <h6 class="text-muted">Assessment Breakdown</h6>
+      <p class="mb-0">
+        Implemented: <strong>{{ status_counts['Implemented'] }}</strong> &middot;
+        Partially Implemented: <strong>{{ status_counts['Partially Implemented'] }}</strong> &middot;
+        Not Implemented: <strong>{{ status_counts['Not Implemented'] }}</strong> &middot;
+        Not Applicable: <strong>{{ status_counts['Not Applicable'] }}</strong>
+      </p>
+    </div></div>
+  </div>
+</div>
+
+{% for control in controls %}
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start">
+      <h5 class="card-title mb-1">{{ control['code'] }} - {{ control['title'] }}</h5>
+      {% if control['status'] %}
+      <span class="badge bg-{{ 'success' if control['status'] == 'Implemented' else 'info text-dark' if control['status'] == 'Partially Implemented' else 'danger' if control['status'] == 'Not Implemented' else 'secondary' }}">{{ control['status'] }}</span>
+      {% else %}
+      <span class="badge bg-secondary">Not assessed</span>
+      {% endif %}
+    </div>
+    <p class="text-muted small mb-1">{{ control['clause'] }}</p>
+    <p class="mb-2">{{ control['description'] }}</p>
+    {% if control['status'] %}
+    <p class="small mb-2">
+      <strong>Notes:</strong> {{ control['notes'] or 'None' }}<br>
+      <span class="text-muted">Assessed by {{ control['assessed_by'] }} on {{ control['assessed_at'] }}</span>
+    </p>
+    {% endif %}
+    <form method="post" action="{{ url_for('compliance') }}" class="row g-2">
+      <input type="hidden" name="control_id" value="{{ control['id'] }}">
+      <div class="col-md-3">
+        <select class="form-select" name="status" required>
+          {% for s in statuses %}
+          <option value="{{ s }}" {{ 'selected' if control['status'] == s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-7">
+        <input type="text" class="form-control" name="notes" placeholder="Assessment notes"
+               value="{{ control['notes'] or '' }}">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-teal w-100">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

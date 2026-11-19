@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Audit Log - CyberSentinel Lite{% endblock %}
+{% block content %}
+<h1 class="mb-3">Audit Log</h1>
+<p class="text-muted">Append-only record of important operations. Audit records cannot be edited or deleted through this application.</p>
+
+{% if rows %}
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr><th>#</th><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>{{ row['id'] }}</td>
+            <td>{{ row['timestamp'] }}</td>
+            <td>{{ row['username'] }}</td>
+            <td>{{ row['action'] }}</td>
+            <td>{{ row['entity'] }}{% if row['entity_id'] %} #{{ row['entity_id'] }}{% endif %}</td>
+            <td>{{ row['details'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<p class="text-muted small mt-2">Showing the latest 100 records, newest first.</p>
+{% else %}
+<p class="text-muted">No audit records yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Risk' if risk else 'Add Risk' }} - CyberSentinel Lite{% endblock %}
+{% block content %}
+<h1 class="mb-4">{{ 'Edit Risk' if risk else 'Add Risk' }}</h1>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="post">
+      <div class="mb-3">
+        <label for="title" class="form-label">Risk Title</label>
+        <input type="text" class="form-control" id="title" name="title" required
+               value="{{ (form_data['title'] if form_data else risk['title'] if risk else '') }}">
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3">{{ (form_data['description'] if form_data else risk['description'] if risk else '') }}</textarea>
+      </div>
+      <div class="mb-3">
+        <label for="asset_id" class="form-label">Affected Asset</label>
+        <select class="form-select" id="asset_id" name="asset_id" required>
+          {% for a in assets %}
+          <option value="{{ a['id'] }}" {{ 'selected' if (form_data['asset_id']|string if form_data else risk['asset_id']|string if risk else '') == (a['id']|string) }}>{{ a['name'] }} ({{ a['category'] }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="likelihood" class="form-label">Likelihood (1 to 5)</label>
+          <input type="number" class="form-control" id="likelihood" name="likelihood" min="1" max="5" required
+                 value="{{ (form_data['likelihood'] if form_data else risk['likelihood'] if risk else '') }}">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="impact" class="form-label">Impact (1 to 5)</label>
+          <input type="number" class="form-control" id="impact" name="impact" min="1" max="5" required
+                 value="{{ (form_data['impact'] if form_data else risk['impact'] if risk else '') }}">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="treatment" class="form-label">Treatment Plan</label>
+        <textarea class="form-control" id="treatment" name="treatment" rows="2">{{ (form_data['treatment'] if form_data else risk['treatment'] if risk else '') }}</textarea>
+      </div>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="mitigation_status" class="form-label">Mitigation Status</label>
+          <select class="form-select" id="mitigation_status" name="mitigation_status" required>
+            {% for s in mitigation_statuses %}
+            <option value="{{ s }}" {{ 'selected' if (form_data['mitigation_status'] if form_data else risk['mitigation_status'] if risk else 'Open') == s }}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="residual_likelihood" class="form-label">Residual Likelihood (1 to 5, optional)</label>
+          <input type="number" class="form-control" id="residual_likelihood" name="residual_likelihood" min="1" max="5"
+                 value="{{ (form_data['residual_likelihood'] if form_data else risk['residual_likelihood'] if risk else '') }}">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="residual_impact" class="form-label">Residual Impact (1 to 5, optional)</label>
+          <input type="number" class="form-control" id="residual_impact" name="residual_impact" min="1" max="5"
+                 value="{{ (form_data['residual_impact'] if form_data else risk['residual_impact'] if risk else '') }}">
+        </div>
+      </div>
+      <p class="text-muted small">Inherent Risk Score = Likelihood x Impact. Low 1-4, Medium 5-9, High 10-16, Critical 17-25. Residual score uses the same scale after treatment.</p>
+      <button type="submit" class="btn btn-teal">{{ 'Save Changes' if risk else 'Add Risk' }}</button>
+      <a class="btn btn-secondary" href="{{ url_for('risks_list') }}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

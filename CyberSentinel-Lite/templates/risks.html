@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Risks - CyberSentinel Lite{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="mb-0">Risks</h1>
+  <a class="btn btn-teal" href="{{ url_for('risk_add') }}">Add Risk</a>
+</div>
+
+<form method="get" action="{{ url_for('risks_list') }}" class="row g-2 mb-3">
+  <div class="col-auto">
+    <select class="form-select" name="level" onchange="this.form.submit()">
+      <option value="">All levels</option>
+      {% for lvl in levels %}
+      <option value="{{ lvl }}" {{ 'selected' if selected_level == lvl }}>{{ lvl }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% if selected_level %}
+  <div class="col-auto"><a class="btn btn-outline-secondary" href="{{ url_for('risks_list') }}">Clear filter</a></div>
+  {% endif %}
+</form>
+
+{% if risks %}
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr><th>Risk</th><th>Asset</th><th>L x I</th><th>Inherent Score</th><th>Level</th><th>Residual</th><th>Mitigation</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for risk in risks %}
+          <tr>
+            <td>
+              <strong>{{ risk['title'] }}</strong>
+              {% if risk['description'] %}<br><small class="text-muted">{{ risk['description'] }}</small>{% endif %}
+              {% if risk['treatment'] %}<br><small><strong>Treatment:</strong> {{ risk['treatment'] }}</small>{% endif %}
+            </td>
+            <td>{{ risk['asset_name'] }}</td>
+            <td>{{ risk['likelihood'] }} x {{ risk['impact'] }}</td>
+            <td>{{ risk['inherent_score'] }}</td>
+            <td><span class="badge bg-{{ 'danger' if risk['level'] == 'Critical' else 'warning text-dark' if risk['level'] == 'High' else 'info text-dark' if risk['level'] == 'Medium' else 'success' }}">{{ risk['level'] }}</span></td>
+            <td>
+              {% if risk['residual_score'] is not none %}
+                {{ risk['residual_score'] }} ({{ risk['residual_level'] }})
+              {% else %}
+                <span class="text-muted">Not assessed</span>
+              {% endif %}
+            </td>
+            <td>{{ risk['mitigation_status'] }}</td>
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-outline-primary" href="{{ url_for('risk_edit', risk_id=risk['id']) }}">Edit</a>
+              <form method="post" action="{{ url_for('risk_delete', risk_id=risk['id']) }}" class="d-inline" onsubmit="return confirm('Delete risk {{ risk['title'] }}?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<p class="text-muted small mt-2">Inherent Risk Score = Likelihood x Impact (1 to 5 each). Low 1-4, Medium 5-9, High 10-16, Critical 17-25.</p>
+{% else %}
+<p class="text-muted">No risks found. Add your first risk.</p>
+{% endif %}
+{% endblock %}

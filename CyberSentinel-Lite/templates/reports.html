@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Reports - CyberSentinel Lite{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="mb-0">Reports</h1>
+  <button class="btn btn-outline-primary d-print-none" onclick="window.print()">Print Report</button>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-navy text-white">Risk Summary</div>
+  <div class="card-body">
+    <p>
+      Critical: <strong>{{ level_counts['Critical'] }}</strong> &middot;
+      High: <strong>{{ level_counts['High'] }}</strong> &middot;
+      Medium: <strong>{{ level_counts['Medium'] }}</strong> &middot;
+      Low: <strong>{{ level_counts['Low'] }}</strong> &middot;
+      Total: <strong>{{ risks | length }}</strong>
+    </p>
+    {% if risks %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr><th>Risk</th><th>Asset</th><th>Score</th><th>Level</th><th>Mitigation</th><th>Residual</th></tr>
+        </thead>
+        <tbody>
+          {% for risk in risks %}
+          <tr>
+            <td>{{ risk['title'] }}</td>
+            <td>{{ risk['asset_name'] }}</td>
+            <td>{{ risk['inherent_score'] }}</td>
+            <td>{{ risk['level'] }}</td>
+            <td>{{ risk['mitigation_status'] }}</td>
+            <td>{{ risk['residual_score'] if risk['residual_score'] is not none else 'Not assessed' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted">No risks recorded.</p>
+    {% endif %}
+    <a class="btn btn-teal d-print-none" href="{{ url_for('risks_csv') }}">Download Risk Summary (CSV)</a>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header bg-navy text-white">Control Assessment Summary</div>
+  <div class="card-body">
+    <p>Assessed: <strong>{{ assessed }} / {{ total_controls }}</strong> controls</p>
+    {% if controls %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr><th>Code</th><th>Control</th><th>Status</th><th>Assessed By</th><th>Assessed At</th></tr>
+        </thead>
+        <tbody>
+          {% for c in controls %}
+          <tr>
+            <td>{{ c['code'] }}</td>
+            <td>{{ c['title'] }}</td>
+            <td>{{ c['status'] or 'Not assessed' }}</td>
+            <td>{{ c['assessed_by'] or '-' }}</td>
+            <td>{{ c['assessed_at'] or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    <a class="btn btn-teal d-print-none" href="{{ url_for('controls_csv') }}">Download Control Summary (CSV)</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Evidence - CyberSentinel Lite{% endblock %}
+{% block content %}
+<h1 class="mb-4">Evidence Management</h1>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-navy text-white">Upload Evidence</div>
+  <div class="card-body">
+    <form method="post" action="{{ url_for('evidence_list') }}" enctype="multipart/form-data">
+      <div class="row g-2">
+        <div class="col-md-5">
+          <label for="file" class="form-label">File (PDF, TXT, CSV, PNG, JPG, DOCX, XLSX; max 5 MB)</label>
+          <input type="file" class="form-control" id="file" name="file" required>
+        </div>
+        <div class="col-md-4">
+          <label for="related_risk_id" class="form-label">Related Risk (optional)</label>
+          <select class="form-select" id="related_risk_id" name="related_risk_id">
+            <option value="">None</option>
+            {% for r in risks %}
+            <option value="{{ r['id'] }}">{{ r['title'] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="submit" class="btn btn-teal w-100">Upload</button>
+        </div>
+      </div>
+    </form>
+    <p class="text-muted small mt-2 mb-0">A SHA-256 hash is calculated at upload time and stored with the file metadata. Use Verify to re-check integrity later.</p>
+  </div>
+</div>
+
+{% if items %}
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr><th>File</th><th>Size</th><th>SHA-256</th><th>Related Risk</th><th>Uploaded By</th><th>Uploaded At</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item['filename'] }}</td>
+            <td>{{ (item['file_size'] / 1024) | round(1) }} KB</td>
+            <td><code title="{{ item['sha256'] }}">{{ item['sha256'][:16] }}...</code></td>
+            <td>{{ item['risk_title'] or 'None' }}</td>
+            <td>{{ item['uploaded_by'] }}</td>
+            <td>{{ item['uploaded_at'] }}</td>
+            <td class="text-nowrap">
+              <form method="post" action="{{ url_for('evidence_verify', evidence_id=item['id']) }}" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Verify</button>
+              </form>
+              <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('evidence_download', evidence_id=item['id']) }}">Download</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<p class="text-muted">No evidence uploaded yet.</p>
+{% endif %}
+{% endblock %}

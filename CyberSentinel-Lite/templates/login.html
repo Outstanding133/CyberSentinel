@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Log in - CyberSentinel Lite{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-navy text-white">
+        <h4 class="mb-0">Log in to CyberSentinel Lite</h4>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Mini Cybersecurity GRC Management Platform</p>
+        <form method="post" action="{{ url_for('login') }}">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required autofocus>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-teal w-100">Log in</button>
+        </form>
+      </div>
+      <div class="card-footer text-muted small">
+        Demo account: <code>admin</code> / <code>Admin@123</code>
+      </div>
+    </div>
+    <p class="text-muted small mt-3">
+      Academic prototype for a B.Tech capstone project. It does not certify
+      ISO 27001 compliance and is not production-grade security.
+    </p>
+  </div>
+</div>
+{% endblock %}
