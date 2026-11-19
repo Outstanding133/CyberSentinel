@@ -132,7 +132,4 @@ cybersentinel-lite/
 - Important actions are written to an append-only audit log; the
   application has no route or function that edits or deletes audit rows.
 
-## Screenshots
 
-Take screenshots after running the app locally: Dashboard, Assets,
-Risks, Compliance, Evidence, Audit Log and Reports pages.
